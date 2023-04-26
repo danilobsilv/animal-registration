@@ -8,46 +8,46 @@ app = FastAPI()
 
 class Animal(BaseModel):
     id: Optional[str]
-    nome: str
-    idade: int
-    sexo: str
-    cor: str
+    name: str
+    age: int
+    sex: str
+    color: str
 
 
-banco: List[Animal] = []
+db: List[Animal] = []
 
 
-@app.get('/animais')
-def listar_animais():
-    return banco
+@app.get('/animals')
+def list_animals():
+    return db
 
 
-@app.get('/animais/{animal_id}')
-def obter_animal(animal_id: str):
-    for animal in banco:
+@app.get('/animals/{animal_id}')
+def get_animal(animal_id: str):
+    for animal in db:
         if animal.id == animal_id:
             return animal
-    return {'erro': 'Animal não localizado'}
+    return {'ERROR': 'Animal not found'}
 
 
-@app.delete('/animais/{animal_id}')
-def remover_animal(animal_id: str):
-    posicao = -1
-    # buscar o posicao do animal
-    for index, animal in enumerate(banco):
+@app.delete('/animals/{animal_id}')
+def delete_animal(animal_id: str):
+    position = -1
+    # buscar o position do animal
+    for index, animal in enumerate(db):
         if animal.id == animal_id:
-            posicao = index
+            position = index
             break
 
-    if posicao != -1:
-        banco.pop(posicao)
-        return {'mensagem': 'Animal removido com sucesso'}
+    if position != -1:
+        db.pop(position)
+        return {'message': 'Animal removed successfully'}
     else:
-        return {'erro': 'Animal não localizado'}
+        return {'ERROR': 'Animal not found'}
 
 
-@app.post('/animais')
-def criar_animal(animal: Animal):
+@app.post('/animals')
+def create_animal(animal: Animal):
     animal.id = str(uuid4())
-    banco.append(animal)
+    db.append(animal)
     return None
