@@ -1,15 +1,27 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Path
+from fastapi.middleware.cors import CORSMiddleware
 from typing import List, Optional
 from pydantic import BaseModel
 from uuid import uuid4
 
+
 app = FastAPI()
+
+origins = ['http://localhost:5500']
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins= origins,
+    allow_credentials= True,
+    allow_methods= ["*"],
+    allow_headers= ["*"]
+)
 
 
 class Animal(BaseModel):
     id: Optional[str]
     name: str
-    age: int
+    idade: int
     sex: str
     color: str
 
@@ -31,7 +43,7 @@ def get_animal(animal_id: str):
 
 
 @app.delete('/animals/{animal_id}')
-def delete_animal(animal_id: str):
+def delete_animal(animal_id: str = Path(..., title="animal's code to look for")):
     position = -1
     for index, animal in enumerate(db):
         if animal.id == animal_id:
@@ -40,7 +52,7 @@ def delete_animal(animal_id: str):
 
     if position != -1:
         db.pop(position)
-        return {'message': 'Animal removed successfully'}
+        return {'message': 'Animal deleted successfully'}
     else:
         return {'ERROR': 'Animal not found'}
 
